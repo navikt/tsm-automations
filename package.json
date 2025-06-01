@@ -3,7 +3,7 @@
     "type": "module",
     "dependencies": {
         "date-fns": "^4.1.0",
-        "octokit": "^4.1.2",
+        "octokit": "^5.0.3",
         "remeda": "^2.21.2",
         "rimraf": "^6.0.1",
         "simple-git": "^3.27.0"
