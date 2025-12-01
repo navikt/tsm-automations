@@ -13,27 +13,8 @@ jobs:
     steps:
       - uses: navikt/teamsykmelding-automations/actions/bunjob@main
         with:
-          NPM_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - id: new-digest
-        run: bun run scripts/update-distroless-digest.ts --has-new-digest --image=${{ env.DISTROLESS_IMAGE }}
+        run: bun run scripts/remind-distroless-digest.ts --image=${{ env.DISTROLESS_IMAGE }}
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          READER_TOKEN: ${{ secrets.READER_TOKEN }}
-    outputs:
-      changed: ${{ steps.new-digest.outputs.digest-changed }}
-      digest: ${{ steps.new-digest.outputs.digest }}
-  approval-for-commits:
-    if: ${{ needs.digest-changed.outputs.changed == 'true' }}
-    needs: digest-changed
-    name: Update Dockerfiles and push to main
-    runs-on: ubuntu-latest
-    environment:
-      name: Distroless frontend
-    steps:
-      - uses: navikt/teamsykmelding-automations/actions/bunjob@main
-        with:
-          NPM_AUTH_TOKEN: ${{ secrets.READER_TOKEN }}
-      - run: bun run scripts/update-distroless-digest.ts --make-changes --author=${{ github.triggering_actor }} --image=${{ env.DISTROLESS_IMAGE }} --digest=${{ needs.digest-changed.outputs.digest }}
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          READER_TOKEN: ${{ secrets.SECURITY_READ_TOKEN }}
